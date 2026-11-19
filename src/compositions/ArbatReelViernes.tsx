@@ -16,7 +16,8 @@ import {C, Sparkle, StrokeText, Tape, useFonts} from "./ArbatCarrusel";
 /**
  * Arbat Panadería — Reel "El antojo no espera al fin de semana" (Viernes 13/11/2026)
  * Microhistoria de pausa en el trabajo. 1080x1920 · 30 fps · ~19 s.
- * Un solo plano continuo (DJI) editado en 5 momentos con fundidos cortos; audio ambiente sin voces + guitarra suave.
+ * Un solo plano continuo (DJI) editado en 5 momentos con fundidos cortos. Sin audio original:
+ * voz en off profunda con IA (ElevenLabs, voz "Marco") que lee los textos + música lo-fi jazz (ElevenLabs Music).
  * Clip (carpeta "7" de Drive): public/assets/arbat/reel7/c0519.mp4
  * Render: npx remotion render ArbatReelViernes out/arbat/reel-viernes.mp4
  */
@@ -59,7 +60,7 @@ const SegClip: React.FC<{s: Seg; first: boolean}> = ({s, first}) => {
   return (
     <AbsoluteFill style={{opacity}}>
       <AbsoluteFill style={{transform: `scale(${scale})`}}>
-        <OffthreadVideo src={SRC} trimBefore={f(s.from)} playbackRate={s.rate ?? 1} style={look} />
+        <OffthreadVideo src={SRC} trimBefore={f(s.from)} playbackRate={s.rate ?? 1} muted style={look} />
       </AbsoluteFill>
     </AbsoluteFill>
   );
@@ -104,6 +105,14 @@ const PackPolaroid: React.FC = () => {
   );
 };
 
+const DIP_TEXT_AT = STARTS[3] + 12;
+const QUESTION_AT = STARTS[SEGS.length - 1] + 10 + 14;
+const VO = [
+  {src: "vo1.wav", at: 6, dur: 5.08}, // "Viernes, cuatro de la tarde. Tu café necesita compañía."
+  {src: "vo2.wav", at: DIP_TEXT_AT, dur: 2.46}, // "El antojo no revisa el calendario."
+  {src: "vo3.wav", at: QUESTION_AT, dur: 2.0}, // "¿A qué hora te llega el antojo?"
+];
+
 export const ArbatReelViernes: React.FC = () => {
   useFonts();
   const last = STARTS[SEGS.length - 1];
@@ -116,15 +125,25 @@ export const ArbatReelViernes: React.FC = () => {
         </Sequence>
       ))}
 
-      {/* Guitarra suave de fondo */}
+      {/* Música lo-fi de fondo, baja cuando habla la voz */}
       <Audio
-        src={staticFile("assets/arbat/reel7/musica.mp3")}
-        volume={(fr) => interpolate(fr, [0, 12, VIERNES_FRAMES - 30, VIERNES_FRAMES], [0, 0.3, 0.3, 0], {extrapolateLeft: "clamp", extrapolateRight: "clamp"})}
+        src={staticFile("assets/arbat/reel7/musica-lofi.mp3")}
+        volume={(fr) => {
+          const env = interpolate(fr, [0, 12, VIERNES_FRAMES - 36, VIERNES_FRAMES], [0, 1, 1, 0], {extrapolateLeft: "clamp", extrapolateRight: "clamp"});
+          const talking = VO.some((v) => fr >= v.at - 6 && fr <= v.at + f(v.dur) + 6);
+          return env * (talking ? 0.13 : 0.3);
+        }}
       />
+      {/* Voz en off (IA, ElevenLabs) */}
+      {VO.map((v) => (
+        <Sequence key={v.src} from={v.at} durationInFrames={f(v.dur) + 4}>
+          <Audio src={staticFile(`assets/arbat/reel7/${v.src}`)} volume={1} />
+        </Sequence>
+      ))}
 
       {/* Hook */}
-      <Sequence from={0} durationInFrames={STARTS[1] + 30}>
-        <Fade at={2} out={STARTS[1] + 30}>
+      <Sequence from={0} durationInFrames={6 + f(5.08) + 8}>
+        <Fade at={2} out={6 + f(5.08) + 8}>
           <StrokeText size={80} stroke={16} style={{left: 50, top: 230, width: 980, textAlign: "center"}}>
             Viernes, 4 de la tarde.
           </StrokeText>
