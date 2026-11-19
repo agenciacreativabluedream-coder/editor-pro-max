@@ -25,11 +25,11 @@ export const RemotionRoot: React.FC = () => {
   return (
     <>
       <Folder name="Arbat-Carrusel-5-15-30">
-        <Still id="ArbatL1" component={ArbatL1} width={1080} height={1350} />
-        <Still id="ArbatL2" component={ArbatL2} width={1080} height={1350} />
-        <Still id="ArbatL3" component={ArbatL3} width={1080} height={1350} />
-        <Still id="ArbatL4" component={ArbatL4} width={1080} height={1350} />
-        <Still id="ArbatL5" component={ArbatL5} width={1080} height={1350} />
+        <Still id="ArbatL1" component={ArbatL1} width={1080} height={1440} />
+        <Still id="ArbatL2" component={ArbatL2} width={1080} height={1440} />
+        <Still id="ArbatL3" component={ArbatL3} width={1080} height={1440} />
+        <Still id="ArbatL4" component={ArbatL4} width={1080} height={1440} />
+        <Still id="ArbatL5" component={ArbatL5} width={1080} height={1440} />
       </Folder>
 
       <Folder name="Examples">
