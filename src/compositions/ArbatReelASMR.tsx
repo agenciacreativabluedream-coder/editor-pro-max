@@ -15,130 +15,139 @@ import {StrokeText, useFonts} from "./ArbatCarrusel";
 
 /**
  * Arbat Panadería — Reel ASMR "No subas el volumen si tienes hambre 🔊" (Martes 10/11/2026)
- * 1080x1920 · 30 fps · ~15 s. Sonido directo; música suave solo al inicio y al final, silencio en el crujido.
- * Clips (carpeta "1" de Drive, audio realzado): public/assets/arbat/reel1/c04xx.mp4
- * Música: public/assets/arbat/reel1/musica.mp3 (ElevenLabs Music)
+ * Versión pausada: tomas largas, fundidos suaves, sin golpes de zoom.
+ * Audio: sonido directo SIN VOCES (separado con Demucs); música suave solo al inicio y al final.
+ * Clips (carpeta "1" de Drive): public/assets/arbat/reel1/c04xx.mp4
  * Render: npx remotion render ArbatReelASMR out/arbat/reel-asmr.mp4
  */
 
 export const ASMR_FPS = 30;
-export const ASMR_FRAMES = 447;
+const XF = 18; // fundido entre escenas (frames)
 
 const clip = (f: string) => staticFile(`assets/arbat/reel1/${f}.mp4`);
 const MUSIC = staticFile("assets/arbat/reel1/musica.mp3");
+
+type Scene = {src: string; from: number; to: number; zoom?: [number, number]; origin?: string};
+
+// Tiempos en segundos dentro de cada clip original.
+const SCENES: Scene[] = [
+  {src: "c0460", from: 2.0, to: 8.5, zoom: [1.04, 1.1]}, // la bolsa de cerca (hook)
+  {src: "c0460", from: 15.5, to: 32.5, zoom: [1.02, 1.08]}, // abrir el empaque y sacar la campechana
+  {src: "c0461", from: 0.0, to: 14.8, zoom: [1.06, 1.14], origin: "45% 50%"}, // macro + primer crujido
+  {src: "c0463", from: 0.3, to: 10.8, zoom: [1.06, 1.12], origin: "50% 45%"}, // segundo crujido
+  {src: "c0464", from: 0.3, to: 10.6, zoom: [1.04, 1.1]}, // tercer crujido
+  {src: "c0465", from: 0.0, to: 17.0, zoom: [1.0, 1.05], origin: "50% 40%"}, // cierre: comer, junto al empaque
+];
+
+const f = (s: number) => Math.round(s * ASMR_FPS);
+const starts: number[] = [];
+let acc = 0;
+for (const s of SCENES) {
+  starts.push(acc);
+  acc += f(s.to - s.from) - XF;
+}
+export const ASMR_FRAMES = acc + XF;
 
 const look: React.CSSProperties = {
   width: "100%",
   height: "100%",
   objectFit: "cover",
-  filter: "contrast(1.08) saturate(1.15) brightness(1.03)",
+  filter: "contrast(1.07) saturate(1.14) brightness(1.03)",
 };
 
-const Pop: React.FC<{children: React.ReactNode; delay?: number; out?: number}> = ({children, delay = 0, out}) => {
-  const frame = useCurrentFrame();
-  const {fps} = useVideoConfig();
-  const s = spring({frame: frame - delay, fps, config: {damping: 12, stiffness: 180}});
-  const o = out ? interpolate(frame, [out - 6, out], [1, 0], {extrapolateLeft: "clamp", extrapolateRight: "clamp"}) : 1;
-  return <AbsoluteFill style={{opacity: Math.min(1, s * 1.4) * o, transform: `scale(${0.85 + 0.15 * s})`}}>{children}</AbsoluteFill>;
-};
-
-/** Clip con zoom lento (y un "golpe" opcional en el frame del crujido). */
-const Shot: React.FC<{src: string; trim: number; from?: number; to?: number; punchAt?: number; origin?: string}> = ({
-  src,
-  trim,
-  from = 1,
-  to = 1.06,
-  punchAt,
-  origin = "50% 50%",
-}) => {
+const SceneClip: React.FC<{s: Scene; first: boolean; last: boolean}> = ({s, first, last}) => {
   const frame = useCurrentFrame();
   const {durationInFrames} = useVideoConfig();
-  let scale = interpolate(frame, [0, durationInFrames], [from, to], {extrapolateRight: "clamp"});
-  if (punchAt !== undefined) {
-    scale += interpolate(frame, [punchAt, punchAt + 3, punchAt + 12], [0, 0.07, 0.02], {
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
-    });
-  }
+  const [z0, z1] = s.zoom ?? [1, 1.06];
+  const scale = interpolate(frame, [0, durationInFrames], [z0, z1]);
+  const opacity = first ? 1 : interpolate(frame, [0, XF], [0, 1], {extrapolateRight: "clamp"});
+  const vol = (fr: number) => {
+    const fin = first ? 1 : interpolate(fr, [0, XF], [0, 1], {extrapolateRight: "clamp"});
+    const fout = last ? 1 : interpolate(fr, [durationInFrames - XF, durationInFrames], [1, 0], {extrapolateLeft: "clamp"});
+    return fin * fout;
+  };
   return (
-    <AbsoluteFill style={{transform: `scale(${scale})`, transformOrigin: origin}}>
-      <OffthreadVideo src={src} trimBefore={trim} style={look} />
+    <AbsoluteFill style={{opacity}}>
+      <AbsoluteFill style={{transform: `scale(${scale})`, transformOrigin: s.origin ?? "50% 50%"}}>
+        <OffthreadVideo src={clip(s.src)} trimBefore={f(s.from)} volume={vol} style={look} />
+      </AbsoluteFill>
     </AbsoluteFill>
   );
+};
+
+const Fade: React.FC<{children: React.ReactNode; inAt?: number; outAt?: number}> = ({children, inAt = 0, outAt}) => {
+  const frame = useCurrentFrame();
+  const {fps} = useVideoConfig();
+  const s = spring({frame: frame - inAt, fps, config: {damping: 18, stiffness: 90}});
+  const o = outAt ? interpolate(frame, [outAt - 15, outAt], [1, 0], {extrapolateLeft: "clamp", extrapolateRight: "clamp"}) : 1;
+  return <AbsoluteFill style={{opacity: s * o, transform: `translateY(${(1 - s) * 18}px)`}}>{children}</AbsoluteFill>;
 };
 
 const EndBrand: React.FC = () => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
-  const s = spring({frame: frame - 6, fps, config: {damping: 14, stiffness: 120}});
+  const s = spring({frame, fps, config: {damping: 18, stiffness: 80}});
   return (
-    <AbsoluteFill>
-      <AbsoluteFill style={{background: "linear-gradient(180deg, rgba(40,12,10,0) 62%, rgba(40,12,10,0.7) 100%)", opacity: s}} />
-      <div style={{position: "absolute", left: 0, right: 0, top: 1300, display: "flex", flexDirection: "column", alignItems: "center", opacity: s, transform: `translateY(${(1 - s) * 30}px)`}}>
+    <AbsoluteFill style={{opacity: s}}>
+      <AbsoluteFill style={{background: "linear-gradient(180deg, rgba(40,12,10,0) 60%, rgba(40,12,10,0.65) 100%)"}} />
+      <div style={{position: "absolute", left: 0, right: 0, top: 1300, display: "flex", justifyContent: "center", transform: `translateY(${(1 - s) * 24}px)`}}>
         <div style={{width: 210, height: 210, borderRadius: "50%", background: "#FFF6E6", boxShadow: "0 8px 24px rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center"}}>
           <Img src={staticFile("assets/arbat/logo-vino.png")} style={{width: 180, height: 180}} />
         </div>
       </div>
-      <Pop delay={10}>
-        <StrokeText size={64} stroke={13} style={{left: 40, top: 1530, width: 1000, textAlign: "center"}}>
-          Suavemente crujientes.
-        </StrokeText>
-      </Pop>
+      <StrokeText size={64} stroke={13} style={{left: 40, top: 1530, width: 1000, textAlign: "center"}}>
+        Suavemente crujientes.
+      </StrokeText>
     </AbsoluteFill>
   );
 };
 
 export const ArbatReelASMR: React.FC = () => {
   useFonts();
+  const crunchStart = starts[2];
   return (
     <AbsoluteFill style={{background: "#000", fontVariantNumeric: "lining-nums"}}>
-      {/* Música suave: inicio (se apaga antes del crujido) */}
-      <Sequence from={0} durationInFrames={200}>
-        <Audio src={MUSIC} volume={(f) => interpolate(f, [0, 8, 120, 196], [0, 0.32, 0.22, 0], {extrapolateRight: "clamp"})} />
+      {SCENES.map((s, i) => (
+        <Sequence key={i} from={starts[i]} durationInFrames={f(s.to - s.from)}>
+          <SceneClip s={s} first={i === 0} last={i === SCENES.length - 1} />
+        </Sequence>
+      ))}
+
+      {/* Música suave al inicio: se apaga antes de abrir el empaque */}
+      <Sequence from={0} durationInFrames={f(9)}>
+        <Audio src={MUSIC} volume={(fr) => interpolate(fr, [0, 15, f(5), f(9)], [0, 0.22, 0.16, 0], {extrapolateRight: "clamp"})} />
       </Sequence>
-      {/* Música suave: final */}
-      <Sequence from={372} durationInFrames={75}>
-        <Audio src={MUSIC} trimBefore={300} volume={(f) => interpolate(f, [0, 18, 62, 75], [0, 0.3, 0.3, 0], {extrapolateRight: "clamp"})} />
+      {/* Música suave al final, muy baja bajo el sonido de comer */}
+      <Sequence from={ASMR_FRAMES - f(10)} durationInFrames={f(10)}>
+        <Audio
+          src={MUSIC}
+          trimBefore={f(5)}
+          volume={(fr) => interpolate(fr, [0, f(3), f(8.5), f(10)], [0, 0.14, 0.14, 0], {extrapolateRight: "clamp"})}
+        />
       </Sequence>
 
-      {/* Toma 1 · Hook: la bolsa de cerca (crujido del plástico) */}
-      <Sequence from={0} durationInFrames={60}>
-        <Shot src={clip("c0460")} trim={102} from={1.05} to={1.12} />
-        <Pop delay={2}>
+      {/* Hook */}
+      <Sequence from={0} durationInFrames={f(5)}>
+        <Fade inAt={4} outAt={f(5)}>
           <StrokeText size={84} stroke={16} style={{left: 40, top: 230, width: 1000, textAlign: "center"}}>
             No subas el volumen
             <br />
             si tienes hambre 🔊
           </StrokeText>
-        </Pop>
+        </Fade>
       </Sequence>
 
-      {/* Toma 1b · Abrir la bolsa (vista cenital) */}
-      <Sequence from={60} durationInFrames={78}>
-        <Shot src={clip("c0459")} trim={330} from={1.02} to={1.1} />
-      </Sequence>
-
-      {/* Toma 2 · Macro: brillo del azúcar */}
-      <Sequence from={138} durationInFrames={60}>
-        <Shot src={clip("c0461")} trim={0} from={1.05} to={1.3} origin="45% 50%" />
-        <Pop delay={22}>
+      {/* Antes del primer crujido */}
+      <Sequence from={crunchStart + f(1)} durationInFrames={f(4)}>
+        <Fade inAt={0} outAt={f(4)}>
           <StrokeText size={72} stroke={14} style={{left: 40, top: 1380, width: 1000, textAlign: "center"}}>
             Ok… ahora sí, súbele 🎧
           </StrokeText>
-        </Pop>
+        </Fade>
       </Sequence>
 
-      {/* Toma 3 · EL CRUJIDO (sin música) */}
-      <Sequence from={198} durationInFrames={108}>
-        <Shot src={clip("c0463")} trim={90} from={1.08} to={1.16} punchAt={62} origin="50% 45%" />
-      </Sequence>
-      <Sequence from={306} durationInFrames={66}>
-        <Shot src={clip("c0461")} trim={228} from={1.12} to={1.2} punchAt={9} origin="55% 55%" />
-      </Sequence>
-
-      {/* Toma 4 · Cierre: partida junto al empaque + logo */}
-      <Sequence from={372} durationInFrames={75}>
-        <Shot src={clip("c0465")} trim={66} from={1.0} to={1.05} origin="50% 40%" />
+      {/* Cierre con marca (últimos ~4.5 s) */}
+      <Sequence from={ASMR_FRAMES - f(4.5)} durationInFrames={f(4.5)}>
         <EndBrand />
       </Sequence>
     </AbsoluteFill>
