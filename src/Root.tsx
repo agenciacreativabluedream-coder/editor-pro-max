@@ -1,4 +1,5 @@
 import {Composition, Folder, Still} from "remotion";
+import {ArbatReelUltima, REEL_FPS, REEL_FRAMES} from "./compositions/ArbatReelUltima";
 import {ArbatL1, ArbatL2, ArbatL3, ArbatL4, ArbatL5, ArbatL5b} from "./compositions/ArbatCarrusel";
 
 // Compositions
@@ -31,6 +32,17 @@ export const RemotionRoot: React.FC = () => {
         <Still id="ArbatL4" component={ArbatL4} width={1080} height={1440} />
         <Still id="ArbatL5" component={ArbatL5} width={1080} height={1440} />
         <Still id="ArbatL5b" component={ArbatL5b} width={1080} height={1440} />
+      </Folder>
+
+      <Folder name="Arbat-Reel-Ultima-Campechana">
+        <Composition
+          id="ArbatReelUltima"
+          component={ArbatReelUltima}
+          durationInFrames={REEL_FRAMES}
+          fps={REEL_FPS}
+          width={1080}
+          height={1920}
+        />
       </Folder>
 
       <Folder name="Examples">

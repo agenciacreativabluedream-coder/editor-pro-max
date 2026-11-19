@@ -20,16 +20,16 @@ export const C = {
   cinta: "rgba(201,163,112,0.86)",
 };
 
-const HAND = "'Grandstander', 'Comic Sans MS', sans-serif";
-const NOTE = "'Mali', 'Grandstander', sans-serif";
+export const HAND = "'Grandstander', 'Comic Sans MS', sans-serif";
+export const NOTE = "'Mali', 'Grandstander', sans-serif";
 
-const pro = (f: string) => staticFile(`assets/arbat/pro/${f}`);
+export const pro = (f: string) => staticFile(`assets/arbat/pro/${f}`);
 
 /* ---------------- Fuentes ---------------- */
 const FONT_CSS =
   "https://fonts.googleapis.com/css2?family=Grandstander:wght@600;700;800;900&family=Mali:wght@600;700&display=block";
 
-const useFonts = () => {
+export const useFonts = () => {
   const [handle] = useState(() => delayRender("Fuentes Arbat"));
   useEffect(() => {
     const done = () => continueRender(handle);
@@ -64,7 +64,7 @@ const torn = (w: number, h: number, seed: number, amp = 7, step = 16) => {
   return `polygon(${pts.join(",")})`;
 };
 
-const Tape: React.FC<{x: number; y: number; w?: number; rot?: number}> = ({x, y, w = 150, rot = -20}) => (
+export const Tape: React.FC<{x: number; y: number; w?: number; rot?: number}> = ({x, y, w = 150, rot = -20}) => (
   <div
     style={{
       position: "absolute",
@@ -83,7 +83,7 @@ const Tape: React.FC<{x: number; y: number; w?: number; rot?: number}> = ({x, y,
 );
 
 /** Tira vino rasgada con texto crema y cintas en las esquinas. */
-const TornLabel: React.FC<{
+export const TornLabel: React.FC<{
   text: string;
   x: number;
   y: number;
@@ -119,7 +119,7 @@ const TornLabel: React.FC<{
 );
 
 /** Nota de papel crema (para fotos) con texto vino. */
-const PaperNote: React.FC<{
+export const PaperNote: React.FC<{
   children: React.ReactNode;
   x: number;
   y: number;
@@ -154,7 +154,7 @@ const PaperNote: React.FC<{
 );
 
 /** Texto crema con contorno vino (para fotos). */
-const StrokeText: React.FC<{
+export const StrokeText: React.FC<{
   children: React.ReactNode;
   size: number;
   stroke?: number;
@@ -191,7 +191,7 @@ const StrokeText: React.FC<{
 /* ---------------- Doodles dorados ---------------- */
 const stroke = {fill: "none", stroke: C.dorado, strokeWidth: 7, strokeLinecap: "round" as const, strokeLinejoin: "round" as const};
 
-const Doodle: React.FC<{x: number; y: number; w: number; h: number; rot?: number; children: React.ReactNode; vb?: string}> = ({
+export const Doodle: React.FC<{x: number; y: number; w: number; h: number; rot?: number; children: React.ReactNode; vb?: string}> = ({
   x,
   y,
   w,
@@ -210,25 +210,25 @@ const Doodle: React.FC<{x: number; y: number; w: number; h: number; rot?: number
   </svg>
 );
 
-const Sparkle: React.FC<{x: number; y: number; s?: number; rot?: number}> = ({x, y, s = 60, rot = 0}) => (
+export const Sparkle: React.FC<{x: number; y: number; s?: number; rot?: number}> = ({x, y, s = 60, rot = 0}) => (
   <Doodle x={x - s / 2} y={y - s / 2} w={s} h={s} rot={rot} vb="-32 -32 64 64">
     <path d="M0,-28 C3,-7 7,-3 28,0 C7,3 3,7 0,28 C-3,7 -7,3 -28,0 C-7,-3 -3,-7 0,-28Z" {...stroke} strokeWidth={5} />
   </Doodle>
 );
 
-const Heart: React.FC<{x: number; y: number; s?: number; rot?: number}> = ({x, y, s = 70, rot = -12}) => (
+export const Heart: React.FC<{x: number; y: number; s?: number; rot?: number}> = ({x, y, s = 70, rot = -12}) => (
   <Doodle x={x - s / 2} y={y - s / 2} w={s} h={s} rot={rot} vb="-32 -32 64 64">
     <path d="M0,22 C-30,2 -28,-24 -10,-24 C-3,-24 0,-16 0,-12 C0,-16 4,-24 11,-24 C29,-24 30,2 0,22Z" {...stroke} strokeWidth={5.5} />
   </Doodle>
 );
 
-const Rays: React.FC<{x: number; y: number; s?: number; rot?: number}> = ({x, y, s = 70, rot = 0}) => (
+export const Rays: React.FC<{x: number; y: number; s?: number; rot?: number}> = ({x, y, s = 70, rot = 0}) => (
   <Doodle x={x} y={y} w={s} h={s} rot={rot} vb="0 0 70 70">
     <path d="M8 40 L30 34 M14 16 L34 26 M38 4 L42 22" {...stroke} strokeWidth={6} />
   </Doodle>
 );
 
-const Arrow: React.FC<{d: string; head: string; x?: number; y?: number; w?: number; h?: number}> = ({d, head, x = 0, y = 0, w = W, h = H}) => (
+export const Arrow: React.FC<{d: string; head: string; x?: number; y?: number; w?: number; h?: number}> = ({d, head, x = 0, y = 0, w = W, h = H}) => (
   <Doodle x={x} y={y} w={w} h={h}>
     <path d={d} {...stroke} />
     <path d={head} {...stroke} />
@@ -236,7 +236,7 @@ const Arrow: React.FC<{d: string; head: string; x?: number; y?: number; w?: numb
 );
 
 /** Óvalo hecho a mano (doble trazo, abierto) alrededor de un producto. */
-const Loop: React.FC<{cx: number; cy: number; rx: number; ry: number; rot?: number}> = ({cx, cy, rx, ry, rot = -6}) => {
+export const Loop: React.FC<{cx: number; cy: number; rx: number; ry: number; rot?: number}> = ({cx, cy, rx, ry, rot = -6}) => {
   const p = (k: number, a0: number, a1: number) => {
     const pts: string[] = [];
     for (let a = a0; a <= a1; a += 0.08) {
@@ -252,7 +252,7 @@ const Loop: React.FC<{cx: number; cy: number; rx: number; ry: number; rot?: numb
   );
 };
 
-const Squiggle: React.FC<{x: number; y: number; w: number}> = ({x, y, w}) => {
+export const Squiggle: React.FC<{x: number; y: number; w: number}> = ({x, y, w}) => {
   const seg = 46;
   let d = `M0 10`;
   for (let i = 0; i < w; i += seg) d += ` q ${seg / 4} -10 ${seg / 2} 0 t ${seg / 2} 0`;
@@ -265,7 +265,7 @@ const Squiggle: React.FC<{x: number; y: number; w: number}> = ({x, y, w}) => {
 };
 
 /* ---------------- Fondos ---------------- */
-const Paper: React.FC<{children: React.ReactNode}> = ({children}) => {
+export const Paper: React.FC<{children: React.ReactNode}> = ({children}) => {
   useFonts();
   return (
     <AbsoluteFill style={{background: C.papel, fontVariantNumeric: "lining-nums"}}>
@@ -275,7 +275,7 @@ const Paper: React.FC<{children: React.ReactNode}> = ({children}) => {
   );
 };
 
-const Photo: React.FC<{src: string; children: React.ReactNode}> = ({src, children}) => {
+export const Photo: React.FC<{src: string; children: React.ReactNode}> = ({src, children}) => {
   useFonts();
   return (
     <AbsoluteFill style={{background: "#2a1512", fontVariantNumeric: "lining-nums"}}>
@@ -286,7 +286,7 @@ const Photo: React.FC<{src: string; children: React.ReactNode}> = ({src, childre
   );
 };
 
-const BigInk: React.FC<{children: React.ReactNode; top: number; size?: number; style?: React.CSSProperties}> = ({
+export const BigInk: React.FC<{children: React.ReactNode; top: number; size?: number; style?: React.CSSProperties}> = ({
   children,
   top,
   size = 96,
