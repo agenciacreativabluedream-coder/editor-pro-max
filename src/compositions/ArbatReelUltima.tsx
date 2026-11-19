@@ -15,13 +15,13 @@ import {C, HAND, Heart, Rays, Sparkle, StrokeText, TornLabel, pro, useFonts} fro
 
 /**
  * Arbat Panadería — Reel "La última campechana" (Lunes 09/11/2026)
- * 1080x1920 · 30 fps · 15 s · audio original (agregar música en Instagram).
+ * 1080x1920 · 30 fps · 21.6 s · audio original (agregar música en Instagram).
  * Clips: public/assets/arbat/reel2/IMG_2106.mp4, IMG_2104.mp4, IMG_2103.mp4 (carpeta "2" de Drive).
  * Render: npx remotion render ArbatReelUltima out/arbat/reel-ultima-campechana.mp4
  */
 
 export const REEL_FPS = 30;
-export const REEL_FRAMES = 450;
+export const REEL_FRAMES = 648;
 
 const clip = (f: string) => staticFile(`assets/arbat/reel2/${f}.mp4`);
 const look: React.CSSProperties = {
@@ -119,30 +119,34 @@ export const ArbatReelUltima: React.FC = () => {
   useFonts();
   return (
     <AbsoluteFill style={{background: "#000", fontVariantNumeric: "lining-nums"}}>
-      {/* 1 · Hook: "nadie quiere" (0–2.7 s) */}
-      <Sequence from={0} durationInFrames={81}>
-        <OffthreadVideo src={clip("IMG_2106")} style={look} />
-        <Pop delay={2}>
-          <Caption top={200}>
-            Cuando todos dicen
-            <br />
-            que no quieren…
-          </Caption>
-        </Pop>
+      {/* 1 · Hook: ofrece, "no quiero"… hasta que abre la bolsa (IMG_2103 0.8–8.4 s) */}
+      <Sequence from={0} durationInFrames={228}>
+        <OffthreadVideo src={clip("IMG_2103")} trimBefore={24} style={{...look, transform: "scale(1.18)", transformOrigin: "0% 50%"}} />
+        <Sequence from={0} durationInFrames={138}>
+          <Pop delay={4} out={138}>
+            <Caption top={200}>
+              Cuando todos dicen
+              <br />
+              que no quieren…
+            </Caption>
+          </Pop>
+        </Sequence>
+        <Sequence from={138} durationInFrames={90}>
+          <Pop delay={2}>
+            <Caption top={200} size={82}>
+              …hasta que queda una.
+            </Caption>
+          </Pop>
+        </Sequence>
       </Sequence>
 
-      {/* 2 · "…hasta que queda una" — se acercan las manos */}
-      <Sequence from={81} durationInFrames={54}>
-        <OffthreadVideo src={clip("IMG_2104")} trimBefore={24} style={look} />
-        <Pop delay={2}>
-          <Caption top={1320} size={82}>
-            …hasta que queda una.
-          </Caption>
-        </Pop>
+      {/* 2 · Se acercan las manos (IMG_2104 1.6–2.8 s) */}
+      <Sequence from={228} durationInFrames={36}>
+        <OffthreadVideo src={clip("IMG_2104")} trimBefore={48} style={look} />
       </Sequence>
 
       {/* 3 · Congelado */}
-      <Sequence from={135} durationInFrames={39}>
+      <Sequence from={264} durationInFrames={39}>
         <FreezeShot />
         <Pop delay={1}>
           <Caption top={1300} size={88}>
@@ -156,27 +160,27 @@ export const ArbatReelUltima: React.FC = () => {
       </Sequence>
 
       {/* 4 · Manotazo (cámara lenta) y escape */}
-      <Sequence from={174} durationInFrames={6}>
+      <Sequence from={303} durationInFrames={6}>
         <OffthreadVideo src={clip("IMG_2104")} trimBefore={82} style={look} />
       </Sequence>
-      <Sequence from={180} durationInFrames={42}>
+      <Sequence from={309} durationInFrames={42}>
         <OffthreadVideo src={clip("IMG_2104")} trimBefore={88} playbackRate={0.5} style={look} />
         <Pop delay={6} out={42}>
           <Sparkle x={330} y={700} s={70} />
           <Rays x={760} y={640} s={90} rot={30} />
         </Pop>
       </Sequence>
-      <Sequence from={222} durationInFrames={72}>
+      <Sequence from={351} durationInFrames={72}>
         <OffthreadVideo src={clip("IMG_2104")} trimBefore={109} style={look} />
       </Sequence>
 
-      {/* 5 · La ganadora protege su bolsa */}
-      <Sequence from={294} durationInFrames={90}>
+      {/* 5 · La ganadora protege su bolsa (IMG_2103 10.0–12.6 s) */}
+      <Sequence from={423} durationInFrames={78}>
         <OffthreadVideo
           src={clip("IMG_2103")}
-          trimBefore={297}
+          trimBefore={300}
           style={{...look, transform: "scale(1.18)", transformOrigin: "0% 50%"}}
-          volume={(f) => interpolate(f, [72, 90], [1, 0], {extrapolateLeft: "clamp", extrapolateRight: "clamp"})}
+          volume={(f) => interpolate(f, [64, 78], [1, 0.4], {extrapolateLeft: "clamp", extrapolateRight: "clamp"})}
         />
         <Pop delay={4}>
           <Caption top={210}>
@@ -186,8 +190,13 @@ export const ArbatReelUltima: React.FC = () => {
         </Pop>
       </Sequence>
 
-      {/* 6 · Cierre con marca y CTA */}
-      <Sequence from={384} durationInFrames={66}>
+      {/* 6 · Final: los demás se quedan sin campechana (IMG_2106) */}
+      <Sequence from={501} durationInFrames={81}>
+        <OffthreadVideo src={clip("IMG_2106")} style={look} />
+      </Sequence>
+
+      {/* 7 · Cierre con marca y CTA */}
+      <Sequence from={582} durationInFrames={66}>
         <EndCard />
       </Sequence>
     </AbsoluteFill>
