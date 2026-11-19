@@ -1,4 +1,5 @@
 import {Composition, Folder, Still} from "remotion";
+import {ArbatReelASMR, ASMR_FPS, ASMR_FRAMES} from "./compositions/ArbatReelASMR";
 import {ArbatReelUltima, REEL_FPS, REEL_FRAMES} from "./compositions/ArbatReelUltima";
 import {ArbatL1, ArbatL2, ArbatL3, ArbatL4, ArbatL5, ArbatL5b} from "./compositions/ArbatCarrusel";
 
@@ -40,6 +41,17 @@ export const RemotionRoot: React.FC = () => {
           component={ArbatReelUltima}
           durationInFrames={REEL_FRAMES}
           fps={REEL_FPS}
+          width={1080}
+          height={1920}
+        />
+      </Folder>
+
+      <Folder name="Arbat-Reel-ASMR">
+        <Composition
+          id="ArbatReelASMR"
+          component={ArbatReelASMR}
+          durationInFrames={ASMR_FRAMES}
+          fps={ASMR_FPS}
           width={1080}
           height={1920}
         />
