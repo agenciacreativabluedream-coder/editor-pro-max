@@ -264,24 +264,6 @@ const Squiggle: React.FC<{x: number; y: number; w: number}> = ({x, y, w}) => {
   );
 };
 
-/** Guirnalda de papel picado (posada / fiesta). */
-const Garland: React.FC<{y: number}> = ({y}) => {
-  const flags = [];
-  for (let i = 0; i < 9; i++) {
-    const x = 70 + i * 118;
-    const t = (x - 540) / 540;
-    const yy = y + 50 * (1 - t * t);
-    flags.push(<path key={i} d={`M${x - 40} ${yy - 4} L${x + 40} ${yy - 4} L${x + 40} ${yy + 52} L${x + 20} ${yy + 70} L${x} ${yy + 52} L${x - 20} ${yy + 70} L${x - 40} ${yy + 52}Z`} {...stroke} strokeWidth={5} />);
-    flags.push(<circle key={`c${i}`} cx={x} cy={yy + 24} r={9} {...stroke} strokeWidth={4} />);
-  }
-  return (
-    <svg width={W} height={200} style={{position: "absolute", left: 0, top: 0, overflow: "visible"}}>
-      <path d={`M0 ${y - 30} Q 540 ${y + 130} 1080 ${y - 30}`} {...stroke} strokeWidth={5} />
-      {flags}
-    </svg>
-  );
-};
-
 /* ---------------- Fondos ---------------- */
 const Paper: React.FC<{children: React.ReactNode}> = ({children}) => {
   useFonts();
@@ -441,92 +423,117 @@ export const ArbatL2: React.FC = () => (
   </Photo>
 );
 
-/* ================= L3 · 15 piezas (papel) ================= */
-export const ArbatL3: React.FC = () => {
-  const p: Place = {scale: 1.32, left: -96, top: 470};
-  const b = BOLSA[15];
-  const a = at(p, b.x0, b.y0);
-  const z = at(p, b.x1, b.y1);
-  const cx = (a.x + z.x) / 2;
-  const cy = (a.y + z.y) / 2;
-  return (
-    <Paper>
-      <TornLabel text="Presentación de 15 piezas" x={110} y={86} w={860} size={54} seed={21} rot={1.5} />
-      <BigInk top={262} size={108}>
-        Para la familia…
-        <br />
-        ¡o la oficina!
-      </BigInk>
-      <Bolsas p={p} focus={{cx, cy, rx: 470, ry: 400}} />
-      <Loop cx={cx} cy={cy} rx={(z.x - a.x) / 2 + 70} ry={(z.y - a.y) / 2 + 70} />
-      <Sparkle x={150} y={620} s={64} />
-      <Sparkle x={940} y={1290} s={50} rot={20} />
-      <Heart x={960} y={640} s={70} rot={12} />
-      <Rays x={70} y={1220} rot={190} />
-      <PaperNote x={620} y={1250} w={380} h={100} rot={-5} size={52} seed={5}>
-        ¡a compartir!
-      </PaperNote>
-    </Paper>
-  );
-};
-
-/* ================= L4 · 30 piezas (papel) ================= */
-export const ArbatL4: React.FC = () => {
-  const p: Place = {scale: 1.25, left: -800, top: 560};
-  const b = BOLSA[30];
-  const a = at(p, b.x0, b.y0);
-  const z = at(p, b.x1, b.y1);
-  const cx = (a.x + z.x) / 2;
-  const cy = (a.y + z.y) / 2;
-  return (
-    <Paper>
-      <TornLabel text="Presentación de 30 piezas" x={110} y={80} w={860} size={54} seed={33} rot={-1.5} />
-      <BigInk top={240} size={96}>
-        Para la reunión,
-        <br />
-        la posada…
-        <br />
-        ¡o la fiesta!
-      </BigInk>
-      <Garland y={590} />
-      <Bolsas p={p} focus={{cx, cy, rx: 560, ry: 380}} />
-      <Loop cx={cx} cy={cy} rx={(z.x - a.x) / 2 + 60} ry={(z.y - a.y) / 2 + 80} rot={-4} />
-      <Sparkle x={90} y={1300} s={60} />
-      <Sparkle x={1000} y={1150} s={48} rot={20} />
-      <Rays x={940} y={1260} rot={60} />
-      <Heart x={170} y={1320} s={54} />
-    </Paper>
-  );
-};
-
-/* ================= L5 · Cierre (foto) ================= */
-export const ArbatL5: React.FC = () => (
-  <Photo src={pro("anaquel-mano.jpg")}>
-    <StrokeText size={118} stroke={18} style={{left: 60, top: 40, width: 960, textAlign: "center"}}>
-      ¿Cuál es
-      <br />
-      la tuya?
+/* ================= L3 · 15 piezas (foto profesional) ================= */
+export const ArbatL3: React.FC = () => (
+  <Photo src={pro("quince-manos.jpg")}>
+    <PaperNote x={70} y={80} w={360} h={116} rot={-4} size={66}>
+      15 piezas
+    </PaperNote>
+    <Rays x={440} y={50} rot={18} />
+    <StrokeText size={104} stroke={18} style={{left: 40, top: 230, width: 1000, textAlign: "center"}}>
+      Para la familia…
     </StrokeText>
-    <div style={{position: "absolute", left: 0, right: 0, top: 310, display: "flex", justifyContent: "center", gap: 40}}>
+    <Loop cx={505} cy={680} rx={340} ry={300} rot={-4} />
+    <Sparkle x={930} y={520} s={60} />
+    <Sparkle x={110} y={960} s={48} rot={20} />
+    <Heart x={960} y={900} s={70} rot={14} />
+    <StrokeText size={96} stroke={18} style={{left: 40, top: 1170, width: 1000, textAlign: "center"}}>
+      ¡o la oficina!
+    </StrokeText>
+    <Arrow d="M700 1160 Q 780 1080 740 1000" head="M716 1022 L740 996 L768 1020" />
+  </Photo>
+);
+
+/* ================= L4 · 30 piezas (foto de reunión) ================= */
+export const ArbatL4: React.FC = () => (
+  <Photo src={pro("fiesta-charola.jpg")}>
+    <AbsoluteFill style={{background: "linear-gradient(180deg, rgba(40,12,10,0.55) 0%, rgba(40,12,10,0.15) 38%, rgba(40,12,10,0) 50%)"}} />
+    <PaperNote x={650} y={70} w={360} h={116} rot={4} size={66} seed={31}>
+      30 piezas
+    </PaperNote>
+    <StrokeText size={96} stroke={18} style={{left: 50, top: 220, width: 1000}}>
+      Para la reunión,
+      <br />
+      la posada…
+    </StrokeText>
+    <StrokeText size={104} stroke={18} style={{left: 0, top: 1270, width: 1080, textAlign: "center"}}>
+      ¡o la fiesta!
+    </StrokeText>
+    <Loop cx={528} cy={950} rx={420} ry={290} rot={-5} />
+    <Sparkle x={980} y={560} s={58} />
+    <Sparkle x={70} y={640} s={46} rot={18} />
+    <Rays x={880} y={1250} rot={70} />
+    <Rays x={90} y={1250} rot={200} />
+    <Heart x={90} y={140} s={64} rot={-12} />
+  </Photo>
+);
+
+/* ================= L5 · Cierre: las tres presentaciones (papel) ================= */
+const FLAT = {w: 1010, h: 1380};
+export const ArbatL5: React.FC = () => {
+  const h = 1030;
+  const w = (FLAT.w / FLAT.h) * h;
+  const x0 = (W - w) / 2;
+  const y0 = 330;
+  const at2 = (fx: number, fy: number) => ({x: x0 + fx * w, y: y0 + fy * h});
+  const tag = (n: number, fx: number, fy: number, rot: number) => {
+    const p = at2(fx, fy);
+    return (
+      <PaperNote key={n} x={p.x - 85} y={p.y - 50} w={170} h={100} rot={rot} size={64} seed={50 + n}>
+        {n}
+      </PaperNote>
+    );
+  };
+  return (
+    <Paper>
+      <BigInk top={50} size={110}>
+        ¿Cuál es la tuya?
+      </BigInk>
+      <TornLabel text="Coméntalo: ¿5, 15 o 30?" x={170} y={200} w={740} h={104} size={50} seed={9} rot={-1.5} />
+      <Img
+        src={pro("tres-presentaciones.jpg")}
+        style={{
+          position: "absolute",
+          left: x0,
+          top: y0,
+          width: w,
+          height: h,
+          mixBlendMode: "multiply",
+        }}
+      />
+      {tag(30, 0.36, 0.3, -5)}
+      {tag(5, 0.75, 0.3, 6)}
+      {tag(15, 0.75, 0.8, -4)}
+      {tag(5, 0.27, 0.8, 4)}
+      <Sparkle x={90} y={520} s={60} />
+      <Heart x={1000} y={560} s={66} rot={14} />
+      <Sparkle x={1010} y={1000} s={46} rot={20} />
+      <Rays x={40} y={1100} rot={190} />
+      <Img src={staticFile("assets/arbat/logo-vino.png")} style={{position: "absolute", right: 30, bottom: 30, width: 150, height: 150}} />
+    </Paper>
+  );
+};
+
+/* ================= L5 (alternativa) · Manos compartiendo (papel) ================= */
+export const ArbatL5b: React.FC = () => (
+  <Paper>
+    <Img src={pro("manos-compartir.jpg")} style={{position: "absolute", inset: 0, width: W, height: H, mixBlendMode: "multiply"}} />
+    <BigInk top={60} size={110}>
+      ¿Cuál es la tuya?
+    </BigInk>
+    <div style={{position: "absolute", left: 0, right: 0, top: 1110, display: "flex", justifyContent: "center", gap: 36}}>
       {[5, 15, 30].map((n, i) => (
         <div key={n} style={{position: "relative", width: 170, height: 100}}>
-          <PaperNote x={0} y={0} w={170} h={100} rot={[-6, 3, -2][i]} size={64} seed={40 + n}>
+          <PaperNote x={0} y={0} w={170} h={100} rot={[-6, 3, -2][i]} size={64} seed={60 + n}>
             {n}
           </PaperNote>
         </div>
       ))}
     </div>
-    <Loop cx={575} cy={775} rx={235} ry={355} rot={-5} />
-    <Sparkle x={250} y={560} s={60} />
-    <Sparkle x={880} y={980} s={46} rot={18} />
-    <Heart x={860} y={640} s={70} rot={14} />
-
-    <StrokeText size={70} stroke={14} style={{left: 40, top: 1170, width: 760, textAlign: "center"}}>
-      Coméntalo abajo:
-      <br />
-      ¿5, 15 o 30?
-    </StrokeText>
-    <Arrow d="M300 1160 Q 260 1080 330 1010" head="M300 1020 L332 1006 L344 1040" />
-    <Img src={staticFile("assets/arbat/logo-crema.png")} style={{position: "absolute", right: 46, bottom: 52, width: 200, height: 200, filter: "drop-shadow(0 4px 10px rgba(0,0,0,0.6))"}} />
-  </Photo>
+    <TornLabel text="Cuéntanos en los comentarios" x={150} y={1270} w={780} h={100} size={46} seed={13} rot={1.5} />
+    <Sparkle x={140} y={300} s={56} />
+    <Heart x={950} y={330} s={66} rot={14} />
+    <Rays x={880} y={980} rot={60} />
+    <Img src={staticFile("assets/arbat/logo-vino.png")} style={{position: "absolute", left: 30, bottom: 30, width: 130, height: 130}} />
+  </Paper>
 );

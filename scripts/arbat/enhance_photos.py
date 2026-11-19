@@ -103,3 +103,37 @@ for _ in range(260):
 paper = vignette(paper, 0.08)
 paper.save(OUT / "papel.jpg", quality=92)
 print("ok")
+
+
+# ---------- v3: fotos reales para L3, L4 y L5 ----------
+def levels_white(im, white=232, black=8):
+    """Lleva el fondo blanco grisáceo a blanco puro (para fundir con papel)."""
+    return im.point(lambda v: max(0, min(255, int((v - black) * 255 / (white - black)))))
+
+
+# L3 · 15 piezas en manos (sesión profesional)
+im = Image.open(SRC / "quince-manos.jpg").convert("RGB")
+im = im.crop((0, 380, 2400, 3580)).resize((W, H), Image.LANCZOS)
+im = grade(im, contrast=1.08, sat=1.12, bright=1.02)
+vignette(im, 0.22).save(OUT / "quince-manos.jpg", quality=93)
+
+# L4 · charola de 30 en la reunión
+im = Image.open(SRC / "fiesta-charola.jpg").convert("RGB").resize((W, H), Image.LANCZOS)
+im = im.filter(ImageFilter.UnsharpMask(radius=2, percent=70, threshold=2))
+im = grade(im, contrast=1.1, sat=1.15, bright=1.03)
+vignette(im, 0.3).save(OUT / "fiesta-charola.jpg", quality=93)
+
+# L5 · las tres presentaciones (flat lay) y manos compartiendo, fondo a blanco
+im = Image.open(SRC / "tres-presentaciones.jpg").convert("RGB")
+im = im.crop((190, 60, 2210, 2820))
+im = warm(levels_white(im, 214, 6), 1.03, 1.0, 0.96)
+im = ImageEnhance.Contrast(im).enhance(1.06)
+im = ImageEnhance.Color(im).enhance(1.15)
+im.resize((im.width // 2, im.height // 2), Image.LANCZOS).save(OUT / "tres-presentaciones.jpg", quality=93)
+
+im = Image.open(SRC / "manos-compartir.jpg").convert("RGB")
+im = im.crop((75, 0, 2325, 3000))
+im = warm(levels_white(im, 240, 4), 1.03, 1.0, 0.96)
+im = ImageEnhance.Color(im).enhance(1.1)
+im.resize((W, H), Image.LANCZOS).save(OUT / "manos-compartir.jpg", quality=93)
+print("v3 ok")

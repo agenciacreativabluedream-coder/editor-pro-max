@@ -1,5 +1,5 @@
 import {Composition, Folder, Still} from "remotion";
-import {ArbatL1, ArbatL2, ArbatL3, ArbatL4, ArbatL5} from "./compositions/ArbatCarrusel";
+import {ArbatL1, ArbatL2, ArbatL3, ArbatL4, ArbatL5, ArbatL5b} from "./compositions/ArbatCarrusel";
 
 // Compositions
 import {ShowcaseComposition} from "./compositions/Showcase";
@@ -30,6 +30,7 @@ export const RemotionRoot: React.FC = () => {
         <Still id="ArbatL3" component={ArbatL3} width={1080} height={1440} />
         <Still id="ArbatL4" component={ArbatL4} width={1080} height={1440} />
         <Still id="ArbatL5" component={ArbatL5} width={1080} height={1440} />
+        <Still id="ArbatL5b" component={ArbatL5b} width={1080} height={1440} />
       </Folder>
 
       <Folder name="Examples">
