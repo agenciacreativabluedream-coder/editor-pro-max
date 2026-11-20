@@ -1,4 +1,5 @@
 import {Composition, Folder, Still} from "remotion";
+import {ArbatReelMalDia, MALDIA_FPS, MALDIA_FRAMES} from "./compositions/ArbatReelMalDia";
 import {ArbatReelViernes, VIERNES_FPS, VIERNES_FRAMES} from "./compositions/ArbatReelViernes";
 import {ArbatReelEdicion, EDICION_FPS, EDICION_FRAMES} from "./compositions/ArbatReelEdicion";
 import {ArbatReelASMR, ASMR_FPS, ASMR_FRAMES} from "./compositions/ArbatReelASMR";
@@ -76,6 +77,17 @@ export const RemotionRoot: React.FC = () => {
           component={ArbatReelViernes}
           durationInFrames={VIERNES_FRAMES}
           fps={VIERNES_FPS}
+          width={1080}
+          height={1920}
+        />
+      </Folder>
+
+      <Folder name="Arbat-Reel-Mal-Dia-Yadi">
+        <Composition
+          id="ArbatReelMalDia"
+          component={ArbatReelMalDia}
+          durationInFrames={MALDIA_FRAMES}
+          fps={MALDIA_FPS}
           width={1080}
           height={1920}
         />
